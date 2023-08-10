@@ -1,0 +1,13 @@
+cmd/get-kube:
+- main.go
+pkg/auth:
+- eks.go
+- ec2.go
+- kind.go
+- docker_desktop.go
+- config_writer.go
+.:
+- go.mod
+- go.sum
+- .goreleaser.yml
+- README.md

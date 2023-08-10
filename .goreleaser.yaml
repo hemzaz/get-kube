@@ -1,0 +1,53 @@
+# .goreleaser.yml
+
+project_name: get-kube
+
+# Defines the build to be done
+builds:
+- id: get-kube-linux
+  main: ./cmd/get-kube/main.go
+  binary: get-kube
+  goos:
+  - linux
+  goarch:
+  - amd64
+  env:
+  - CGO_ENABLED=0
+  ldflags:
+  - '-s -w'
+- id: get-kube-macos
+  main: ./cmd/get-kube/main.go
+  binary: get-kube
+  goos:
+  - darwin
+  goarch:
+  - arm64
+  env:
+  - CGO_ENABLED=0
+  ldflags:
+  - '-s -w'
+
+# Defines the archive that will contain the binary
+archives:
+- format: tar.gz
+  name_template: '{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}'
+
+# Defines the snapshot (pre-release) strategy
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+# Disables the creation of checksums for the binaries
+checksum:
+  name_template: 'checksums.txt'
+
+# Disables the creation of Docker images
+dockers: []
+
+# Disables publishing to package managers
+brews: []
+# nfpm: {}
+
+# Disables the release to GitHub
+release:
+  draft: false
+  prerelease: "false"
