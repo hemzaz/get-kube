@@ -1,21 +1,23 @@
 # get-kube
 
-`get-kube` is a CLI tool designed to retrieve Kubernetes authentication tokens from various environments and update the local `.kube/config` file. It supports EKS clusters, EC2-hosted Kubernetes, Kind clusters, and Docker Desktop Kubernetes.
+`get-kube` is a CLI tool designed to retrieve Kubernetes authentication tokens from various environments and update the local `.kube/config` file. It supports EKS clusters, EC2-hosted Kubernetes and Kind clusters.  
 
 ## Table of Contents
 
-- [Prerequisites](#prerequisites)
-  - [Dependencies](#dependencies)
-  - [Setup](#setup)
-- [Usage](#usage)
-  - [EKS](#eks)
-  - [EC2](#ec2)
-  - [Kind](#kind)
-  - [Docker Desktop](#docker-desktop)
-- [Building and Installation](#building-and-installation)
-  - [Linux](#linux)
-  - [macOS](#macos)
+- [get-kube](#get-kube)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+    - [Dependencies](#dependencies)
+    - [Setup](#setup)
+  - [Usage](#usage)
+    - [EKS](#eks)
+    - [EC2](#ec2)
+    - [Kind](#kind)
+  - [Building and Installation](#building-and-installation)
+    - [Linux](#linux)
+    - [macOS](#macos)
 - [Extending the Code](#extending-the-code)
+- [](#)
 
 ## Prerequisites
 
@@ -23,7 +25,6 @@
 
 Before using `get-kube`, ensure you have the following tools installed:
 
-- Docker: Used for containerized environments.
 - Kind: For running local Kubernetes clusters using Docker container nodes.
 - AWS CLI: Required for interacting with Amazon EKS and EC2.
 - Kubectl: Kubernetes command-line tool.
@@ -63,20 +64,6 @@ To fetch tokens from all local Kind clusters:
 
 ```bash
 get-kube kind
-```
-
-### Docker Desktop
-
-To fetch tokens from Docker Desktop Kubernetes:
-
-```bash
-get-kube docker-desktop
-```
-
-Optionally, specify a context name:
-
-```bash
-get-kube docker-desktop --context=my-context-name
 ```
 
 ## Building and Installation

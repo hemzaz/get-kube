@@ -8,49 +8,49 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("Please provide a valid argument: ec2, eks, docker-desktop, kind")
+	args := os.Args[1:]
+	if len(args) == 0 {
+		fmt.Println("Usage: get-kube <eks|ec2|kind> [additional-args]")
 		return
 	}
 
-	switch os.Args[1] {
-	case "ec2":
-		if len(os.Args) < 3 {
-			fmt.Println("Please provide the master node name/IP/FQDN for EC2.")
+	switch args[0] {
+	case "eks":
+		tokens, err := auth.GetEKSTokens()
+		if err != nil {
+			fmt.Println("Error fetching EKS tokens:", err)
 			return
 		}
-		_, err := auth.GetEC2Token(os.Args[2])
-		if err != nil {
-			fmt.Println("Error:", err)
-		}
-
-	case "eks":
-		_, err := auth.GetEKSToken()
-		if err != nil {
-			fmt.Println("Error:", err)
-		}
-
-	case "docker-desktop":
-		contextName := ""
-		if len(os.Args) > 2 {
-			contextName = os.Args[2]
-		}
-		_, err := auth.GetDockerDesktopToken(contextName)
-		if err != nil {
-			fmt.Println("Error:", err)
+		for _, token := range tokens {
+			fmt.Println("EKS Token:", token)
 		}
 
 	case "kind":
-		contextName := ""
-		if len(os.Args) > 2 {
-			contextName = os.Args[2]
+		if len(args) < 2 {
+			fmt.Println("Usage: get-kube kind <cluster-name>")
+			return
 		}
-		_, err := auth.GetKindToken(contextName)
+		token, err := auth.GetKindToken(args[1])
 		if err != nil {
-			fmt.Println("Error:", err)
+			fmt.Println("Error fetching Kind token:", err)
+			return
 		}
+		fmt.Println("Kind Token:", token)
+
+	case "ec2":
+		if len(args) < 2 {
+			fmt.Println("Usage: get-kube ec2 <master-node-name/master-node-ip/master-node-fqdn>")
+			return
+		}
+		// Assuming you have a function in auth for EC2
+		token, err := auth.GetEC2Token(args[1])
+		if err != nil {
+			fmt.Println("Error fetching EC2 token:", err)
+			return
+		}
+		fmt.Println("EC2 Token:", token)
 
 	default:
-		fmt.Println("Invalid argument. Please provide one of the following: ec2, eks, docker-desktop, kind")
+		fmt.Println("Invalid argument. Please provide one of the following: eks, ec2, kind, docker-desktop")
 	}
 }

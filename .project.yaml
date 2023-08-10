@@ -4,7 +4,6 @@ pkg/auth:
 - eks.go
 - ec2.go
 - kind.go
-- docker_desktop.go
 - config_writer.go
 .:
 - go.mod
