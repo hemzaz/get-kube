@@ -32,9 +32,8 @@ You can install these dependencies using package managers like `apt` for Linux, 
 
 ### Setup
 
-- **AWS Account**: Ensure you have an AWS account and are authenticated. This is necessary for fetching tokens from EKS and EC2-hosted Kubernetes clusters.
-- **SSH Private key**: Ensure you have SSH Private key for your instances. This is necessary for fetching tokens from EC2-hosted Kubernetes clusters.
-  
+- **AWS Account**: Ensure you have an AWS account and are authenticated.
+- **SSH Private key**: Ensure you have SSH Private key for your instances.
 - **Environment Variables**: Set up the following environment variables:
   - `AWS_ACCESS_KEY_ID`: Your AWS access key.
   - `AWS_SECRET_ACCESS_KEY`: Your AWS secret key.
