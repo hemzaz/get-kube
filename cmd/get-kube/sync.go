@@ -6,21 +6,18 @@ import (
 
 	"github.com/hemzaz/get-kube/pkg/kubeconfig"
 	"github.com/spf13/cobra"
+	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-// SyncCmd creates the "sync" subcommand for syncing kubeconfig files.
 func SyncCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sync [context]",
 		Short: "Sync kubeconfig with remote clusters",
-		Long: `The "sync" command updates the local kubeconfig with remote configurations
-from Kubernetes clusters. This ensures your local kubeconfig is always in sync
-with the latest cluster credentials and configurations.`,
-		Args: cobra.MaximumNArgs(1),
-		Run:  runSync,
+		Long:  `The "sync" command updates the local kubeconfig with remote configurations.`,
+		Args:  cobra.MaximumNArgs(1),
+		Run:   runSync,
 	}
 
-	// Flags for syncing
 	cmd.Flags().StringP("host", "H", "", "Cluster host (IP or hostname) for remote sync")
 	cmd.Flags().BoolP("all", "a", false, "Sync all contexts in kubeconfig")
 	cmd.Flags().StringP("user", "u", "root", "SSH user for remote access")
@@ -55,7 +52,7 @@ func runSync(cmd *cobra.Command, args []string) {
 		}
 	} else {
 		if len(args) == 0 {
-			fmt.Println("Error: Please specify a context or use the --all flag to sync all contexts.")
+			fmt.Println("Error: Please specify a context or use the --all flag.")
 			os.Exit(1)
 		}
 		contextName := args[0]

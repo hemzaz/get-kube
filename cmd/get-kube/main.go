@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	getkube "github.com/hemzaz/get-kube/cmd/get-kube"
 	"github.com/spf13/cobra"
 )
 
@@ -22,8 +21,8 @@ as well as syncing local kubeconfig with remote sources.`,
 	}
 
 	// Add subcommands
-	rootCmd.AddCommand(getkube.GetCmd())
-	rootCmd.AddCommand(getkube.SyncCmd())
+	rootCmd.AddCommand(GetCmd())
+	rootCmd.AddCommand(SyncCmd())
 
 	// Execute the root command
 	if err := rootCmd.Execute(); err != nil {
