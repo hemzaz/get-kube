@@ -1,4 +1,4 @@
-package getkube
+package main
 
 import (
 	"fmt"
@@ -69,12 +69,11 @@ func runSync(cmd *cobra.Command, args []string) {
 }
 
 func syncContext(contextName string, localConfig *clientcmdapi.Config, host, user, password, key string) error {
-	context, ok := localConfig.Contexts[contextName]
-	if !ok {
+	if _, ok := localConfig.Contexts[contextName]; !ok {
 		return fmt.Errorf("context '%s' not found in local kubeconfig", contextName)
 	}
 
-	remoteConfig, err := fetchRemoteKubeConfig(host, user, password, key)
+	remoteConfig, err := kubeconfig.FetchRemoteKubeConfig(host, user, password, key)
 	if err != nil {
 		return fmt.Errorf("failed to fetch remote kubeconfig: %v", err)
 	}

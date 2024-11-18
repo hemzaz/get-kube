@@ -1,4 +1,4 @@
-package getkube
+package main
 
 import (
 	"fmt"
