@@ -139,6 +139,7 @@ To build and install `get-kube`:
 1. Build the binary:
 
     ```bash
+    make dependencies
     make build
     ```
 
@@ -159,6 +160,7 @@ To build and install `get-kube`:
 1. Build the binary:
 
     ```bash
+    make dependencies
     make build
     ```
 
@@ -193,15 +195,7 @@ To build and install `get-kube`:
    - Add or modify commands in the `cmd/get-kube/` directory.
    - Extend functionality in the `pkg/` directory.
 
-3. **Test your changes**:
-   - Use the provided Makefile to test and build your changes:
-
-     ```bash
-     make test
-     make build
-     ```
-
-4. **Contribute**:
+3. **Contribute**:
    - Open a pull request with your changes to the repository.
 
 ---
