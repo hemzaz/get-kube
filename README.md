@@ -1,125 +1,240 @@
 # get-kube
 
-`get-kube` is a CLI tool designed to retrieve Kubernetes authentication tokens from various environments and update the local `.kube/config` file. It supports EKS clusters, EC2-hosted Kubernetes and Kind clusters.  
+`get-kube` (or `gkb`) is a powerful and flexible CLI tool designed to manage Kubernetes authentication tokens and configurations. With support for multiple environments—including Amazon EKS, EC2-hosted Kubernetes, and generic Kubernetes clusters—`get-kube` simplifies the process of retrieving tokens and syncing your local `.kube/config` file with remote clusters.
+
+Whether you’re working in a cloud environment, managing on-premise infrastructure, or switching between clusters, `get-kube` has you covered.
+
+---
 
 ## Table of Contents
 
 - [get-kube](#get-kube)
   - [Table of Contents](#table-of-contents)
+  - [Features](#features)
   - [Prerequisites](#prerequisites)
     - [Dependencies](#dependencies)
     - [Setup](#setup)
   - [Usage](#usage)
-    - [EKS](#eks)
-    - [EC2](#ec2)
-    - [Kind](#kind)
+    - [Retrieve Tokens (`get`)](#retrieve-tokens-get)
+      - [**EKS**](#eks)
+      - [**EC2**](#ec2)
+      - [**Cluster**](#cluster)
+    - [Sync Kubeconfig (`sync`)](#sync-kubeconfig-sync)
+      - [**Sync All Contexts**](#sync-all-contexts)
+      - [**Sync a Specific Context**](#sync-a-specific-context)
   - [Building and Installation](#building-and-installation)
     - [Linux](#linux)
     - [macOS](#macos)
-- [Extending the Code](#extending-the-code)
-- [](#)
+  - [Extending the Code](#extending-the-code)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+---
+
+## Features
+
+`get-kube` offers the following capabilities:
+
+- **Retrieve Kubernetes authentication tokens from**:
+  - **EKS**: Fetch tokens for all Amazon EKS clusters available in your AWS account.
+  - **EC2**: Obtain tokens from Kubernetes clusters hosted on Amazon EC2.
+  - **Generic Kubernetes Clusters**: Use SSH to retrieve tokens from any Kubernetes cluster.
+- **Sync your local `.kube/config` with remote configurations**:
+  - Update or merge cluster details, authentication info, and contexts into your existing kubeconfig.
+  - Automatically set the current context if updated.
+- **Alias support**: Use `gkb` as a shorthand for `get-kube`.
+- **Lightweight and fast**: Designed with simplicity and performance in mind.
+
+---
 
 ## Prerequisites
 
 ### Dependencies
 
-Before using `get-kube`, ensure you have the following tools installed:
+Before using `get-kube`, ensure the following tools are installed:
 
-- Kind: For running local Kubernetes clusters using Docker container nodes.
-- AWS CLI: Required for interacting with Amazon EKS and EC2.
-- Kubectl: Kubernetes command-line tool.
+- **AWS CLI**: For Amazon EKS and EC2 authentication.
+- **Kubectl**: Kubernetes command-line tool.
+- **SSH**: For accessing remote clusters via SSH.
 
-You can install these dependencies using package managers like `apt` for Linux, `brew` for macOS, or by downloading them from their respective official websites.
-
-### Setup
-
-- **AWS Account**: Ensure you have an AWS account and are authenticated.
-- **SSH Private key**: Ensure you have SSH Private key for your instances.
-- **Environment Variables**: Set up the following environment variables:
-  - `AWS_ACCESS_KEY_ID`: Your AWS access key.
-  - `AWS_SECRET_ACCESS_KEY`: Your AWS secret key.
-  - `AWS_DEFAULT_REGION`: The default AWS region (e.g., `us-west-1`).
-
-## Usage
-
-### EKS
-
-To fetch tokens from all EKS clusters you have access to:
-
-```bash
-get-kube eks
-```
-
-### EC2
-
-To fetch tokens from a Kubernetes cluster hosted on an EC2 instance, provide the master node's name, IP, or FQDN:
-
-```bash
-get-kube ec2 <master-node-name/IP/FQDN>
-```
-
-### Kind
-
-To fetch tokens from all local Kind clusters:
-
-```bash
-get-kube kind
-```
-
-## Building and Installation
-
-### Linux
-
-To build for Linux:
-
-```bash
-make build
-```
-
-After building, make the binary executable:
-
-```bash
-chmod a+x ./dist/get-kube_linux_amd64/get-kube
-```
-
-Then, install the binary:
-
-```bash
-sudo mv ./dist/get-kube_linux_amd64/get-kube /usr/local/bin/
-```
-
-### macOS
-
-To build for macOS:
-
-```bash
-make build
-```
-
-After building, make the binary executable:
-
-```bash
-chmod a+x ./dist/get-kube_darwin_arm64/get-kube
-```
-
-Then, install the binary:
-
-```bash
-sudo mv ./dist/get-kube_darwin_arm64/get-kube /usr/local/bin/
-```
-
-# Extending the Code
-
-If you wish to extend the functionality of `get-kube`, follow these steps:
-
-1. **Setup the Development Environment**: Ensure you have Go installed and set up on your machine.
-2. **Clone the Repository**: `git clone https://github.com/hemzaz/get-kube.git`
-3. **Navigate to the Code Directory**: `cd get-kube`
-4. **Make Changes**: Add new features or modify existing ones in the `pkg` directory or the main application in the `cmd` directory.
-5. **Build and Test**: Use the provided `Makefile` to build and test your changes.
-6. **Contribute**: If you believe your changes could benefit others, consider creating a pull request to merge your changes back into the main repository.
+You can install these dependencies using package managers (`apt`, `brew`, etc.) or by downloading them from their respective official websites.
 
 ---
 
-Authored by: **hemzaz the frogodile** 🐸🐊
-#
+### Setup
+
+1. **AWS Configuration**: Ensure you are authenticated with your AWS account.
+2. **SSH Access**: Verify that you have an SSH private key to access your EC2 or other Kubernetes hosts.
+3. **Environment Variables**: Set up the following for AWS authentication:
+   - `AWS_ACCESS_KEY_ID`: Your AWS access key.
+   - `AWS_SECRET_ACCESS_KEY`: Your AWS secret key.
+   - `AWS_DEFAULT_REGION`: Your AWS region (e.g., `us-west-1`).
+
+---
+
+## Usage
+
+`get-kube` offers two primary commands: `get` and `sync`.
+
+---
+
+### Retrieve Tokens (`get`)
+
+The `get` command fetches authentication tokens or kubeconfig information from EKS, EC2, or a generic Kubernetes cluster.
+
+#### **EKS**
+
+Fetch tokens for all available EKS clusters:
+
+```bash
+get-kube get eks
+```
+
+#### **EC2**
+
+Fetch a token from an EC2-hosted Kubernetes cluster:
+
+```bash
+get-kube get ec2 --host <master-node-IP> --user <ssh-user>
+```
+
+#### **Cluster**
+
+Fetch a token from a generic Kubernetes cluster via SSH:
+
+```bash
+get-kube get cluster --host <hostname> --user <ssh-user> --key <path-to-ssh-key>
+```
+
+---
+
+### Sync Kubeconfig (`sync`)
+
+The `sync` command synchronizes your local kubeconfig file with remote cluster data.
+
+#### **Sync All Contexts**
+
+Synchronize all available contexts in your local kubeconfig with remote clusters:
+
+```bash
+get-kube sync --all
+```
+
+#### **Sync a Specific Context**
+
+Synchronize a specific context:
+
+```bash
+get-kube sync <context-name> --host <hostname> --user <ssh-user> --key <path-to-ssh-key>
+```
+
+---
+
+## Building and Installation
+
+To build and install `get-kube`:
+
+### Linux
+
+1. Build the binary:
+
+    ```bash
+    make build
+    ```
+
+2. Make it executable:
+
+    ```bash
+    chmod a+x ./dist/get-kube_linux_amd64/get-kube
+    ```
+
+3. Install the binary system-wide:
+
+    ```bash
+    sudo mv ./dist/get-kube_linux_amd64/get-kube /usr/local/bin/
+    ```
+
+### macOS
+
+1. Build the binary:
+
+    ```bash
+    make build
+    ```
+
+2. Make it executable:
+
+    ```bash
+    chmod a+x ./dist/get-kube_darwin_arm64/get-kube
+    ```
+
+3. Install the binary system-wide:
+
+    ```bash
+    sudo mv ./dist/get-kube_darwin_arm64/get-kube /usr/local/bin/
+    ```
+
+---
+
+## Extending the Code
+
+`get-kube` is designed with extensibility in mind. To add features or modify existing functionality:
+
+1. **Set up your development environment**:
+   - Install Go (1.20 or later).
+   - Clone the repository:
+
+     ```bash
+     git clone https://github.com/hemzaz/get-kube.git
+     cd get-kube
+     ```
+
+2. **Modify the codebase**:
+   - Add or modify commands in the `cmd/get-kube/` directory.
+   - Extend functionality in the `pkg/` directory.
+
+3. **Test your changes**:
+   - Use the provided Makefile to test and build your changes:
+
+     ```bash
+     make test
+     make build
+     ```
+
+4. **Contribute**:
+   - Open a pull request with your changes to the repository.
+
+---
+
+## Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository.
+2. Create a feature branch:
+
+    ```bash
+    git checkout -b feature/your-feature
+    ```
+
+3. Commit your changes:
+
+    ```bash
+    git commit -m "Add your feature"
+    ```
+
+4. Push to your fork:
+
+    ```bash
+    git push origin feature/your-feature
+    ```
+
+5. Open a pull request.
+
+---
+
+## License
+
+`get-kube` is open-source software licensed under the MIT License. Feel free to use, modify, and distribute the code.
+
+Authored by: hemzaz the frogodile 🐸🐊
