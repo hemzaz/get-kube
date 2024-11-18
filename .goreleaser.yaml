@@ -2,7 +2,7 @@
 
 project_name: get-kube
 
-# Defines the build to be done
+# Defines the builds to be done
 builds:
 - id: get-kube-linux
   main: ./cmd/get-kube/main.go
@@ -11,6 +11,7 @@ builds:
   - linux
   goarch:
   - amd64
+  - arm64
   env:
   - CGO_ENABLED=0
   ldflags:
@@ -21,33 +22,56 @@ builds:
   goos:
   - darwin
   goarch:
+  - amd64
+  - arm64
+  env:
+  - CGO_ENABLED=0
+  ldflags:
+  - '-s -w'
+- id: get-kube-windows
+  main: ./cmd/get-kube/main.go
+  binary: get-kube.exe
+  goos:
+  - windows
+  goarch:
+  - amd64
   - arm64
   env:
   - CGO_ENABLED=0
   ldflags:
   - '-s -w'
 
-# Defines the archive that will contain the binary
+# Defines the archives containing the binaries
 archives:
 - format: tar.gz
   name_template: '{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}'
+  files:
+  - LICENSE
+  - README.md
+  - CHANGELOG.md
+- format: zip
+  name_template: '{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}'
+  files:
+  - LICENSE
+  - README.md
 
 # Defines the snapshot (pre-release) strategy
 snapshot:
   name_template: "{{ .Tag }}-next"
 
-# Disables the creation of checksums for the binaries
+# Generates checksums for binaries
 checksum:
   name_template: 'checksums.txt'
 
-# Disables the creation of Docker images
+# Docker image creation is disabled
 dockers: []
 
-# Disables publishing to package managers
+# Package managers like Brew and nfpm (disabled)
 brews: []
-# nfpm: {}
+# nfpm: []
 
-# Disables the release to GitHub
+# Release configuration
 release:
   draft: false
-  prerelease: "false"
+  # prerelease: false
+  name_template: "{{ .ProjectName }} v{{ .Version }}" # Release naming convention
