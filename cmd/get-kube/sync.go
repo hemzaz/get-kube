@@ -2,10 +2,9 @@ package main
 
 import (
 	"errors"
-	"fmt"
-	"os"
 
 	"github.com/hemzaz/get-kube/pkg/kubeconfig"
+	"github.com/hemzaz/get-kube/pkg/utils"
 	"github.com/spf13/cobra"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
@@ -51,24 +50,26 @@ func runSync(cmd *cobra.Command, args []string) error {
 	// Load the local kubeconfig
 	localConfig, err := kubeconfig.LoadConfig(kubeconfigPath)
 	if err != nil {
-		return fmt.Errorf("error loading local kubeconfig: %v", err)
+		utils.LogError("Error loading local kubeconfig: %v", err)
+		return err
 	}
 
 	if allContexts {
-		fmt.Println("Syncing all contexts from remote clusters...")
+		utils.LogInfo("Syncing all contexts from remote clusters...")
 		for contextName := range localConfig.Contexts {
-			fmt.Printf("Syncing context: %s\n", contextName)
+			utils.LogInfo("Syncing context: %s", contextName)
 			if err := syncContext(contextName, localConfig, host, user, password, key); err != nil {
-				fmt.Printf("Error syncing context '%s': %v\n", contextName, err)
+				utils.LogError("Error syncing context '%s': %v", contextName, err)
 			}
 		}
 	} else {
 		// Sync a specific context
 		contextName := args[0]
 		if err := syncContext(contextName, localConfig, host, user, password, key); err != nil {
-			return fmt.Errorf("error syncing context '%s': %v", contextName, err)
+			utils.LogError("Error syncing context '%s': %v", contextName, err)
+			return err
 		}
-		fmt.Printf("Context '%s' synced successfully.\n", contextName)
+		utils.LogInfo("Context '%s' synced successfully.", contextName)
 	}
 
 	return nil
@@ -77,22 +78,24 @@ func runSync(cmd *cobra.Command, args []string) error {
 func syncContext(contextName string, localConfig *clientcmdapi.Config, host, user, password, key string) error {
 	// Check if the context exists locally
 	if _, ok := localConfig.Contexts[contextName]; !ok {
-		return fmt.Errorf("context '%s' not found in local kubeconfig", contextName)
+		return errors.New("context '%s' not found in local kubeconfig")
 	}
 
 	// Fetch the remote kubeconfig for the cluster
-	fmt.Printf("Fetching remote kubeconfig for context '%s'...\n", contextName)
+	utils.LogInfo("Fetching remote kubeconfig for context '%s'...", contextName)
 	remoteConfig, err := kubeconfig.FetchRemoteKubeConfig(host, user, password, key)
 	if err != nil {
-		return fmt.Errorf("failed to fetch remote kubeconfig: %v", err)
+		utils.LogError("Failed to fetch remote kubeconfig: %v", err)
+		return err
 	}
 
 	// Sync the remote kubeconfig with the local one
-	fmt.Printf("Merging remote kubeconfig for context '%s'...\n", contextName)
+	utils.LogInfo("Merging remote kubeconfig for context '%s'...", contextName)
 	if err := kubeconfig.SyncKubeConfig(localConfig, remoteConfig); err != nil {
-		return fmt.Errorf("failed to sync kubeconfig: %v", err)
+		utils.LogError("Failed to sync kubeconfig: %v", err)
+		return err
 	}
 
-	fmt.Printf("Successfully synced context '%s'.\n", contextName)
+	utils.LogInfo("Successfully synced context '%s'.", contextName)
 	return nil
 }

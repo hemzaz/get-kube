@@ -2,8 +2,8 @@ package auth
 
 import (
 	"fmt"
-	"path/filepath"
 
+	"github.com/hemzaz/get-kube/pkg/utils"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
@@ -11,7 +11,7 @@ import (
 // UpdateKubeConfig updates the kubeconfig file with the given token and cluster details.
 func UpdateKubeConfig(clusterName, masterNode, user, token string) error {
 	// Load the current kubeconfig
-	kubeconfigPath := filepath.Join(GetDefaultKubeConfigPath())
+	kubeconfigPath := utils.GetDefaultKubeConfigPath()
 	config, err := clientcmd.LoadFromFile(kubeconfigPath)
 	if err != nil {
 		return fmt.Errorf("failed to load kubeconfig: %v", err)
