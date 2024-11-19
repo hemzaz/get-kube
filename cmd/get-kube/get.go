@@ -37,8 +37,18 @@ func runGet(cmd *cobra.Command, args []string) {
 	case "eks":
 		getEKS()
 	case "ec2":
+		host, _ := cmd.Flags().GetString("host")
+		if host == "" {
+			fmt.Println("Error: --host is required for EC2.")
+			return
+		}
 		getEC2(cmd)
 	case "cluster":
+		host, _ := cmd.Flags().GetString("host")
+		if host == "" {
+			fmt.Println("Error: --host is required for cluster.")
+			return
+		}
 		getCluster(cmd)
 	default:
 		fmt.Println("Invalid source. Use one of: eks, ec2, cluster.")
